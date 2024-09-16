@@ -6,9 +6,12 @@ public class Modelojuego {
     private LinkedList<FichaDomino> listaFichas;
     private Jugador[] jugadores;
     private TableroDomino tablero;
+    private boolean esPrimeraPieza;
+    private int indiceJugadorActual;
 
     public Modelojuego() {
         listaFichas = new LinkedList<FichaDomino>();
+        esPrimeraPieza = true;
         inicializarTablero();
         inicializarJugadores();
     }
@@ -27,7 +30,7 @@ public class Modelojuego {
             jugadores[i] = new Jugador("Jugador" + (i + 1), new LinkedList<FichaDomino>());
     }
 
-    public void mezclarFichas() {
+    public LinkedList<FichaDomino> mezclarFichas() {
         for (int i = 0; i < 1000; i++) {
             int rand1 = Rutinas.nextInt(0, 27);
             int rand2 = Rutinas.nextInt(0, 27);
@@ -36,6 +39,7 @@ public class Modelojuego {
             listaFichas.set(rand2, temp);
         }
         tablero.mostrarFichas();
+        return listaFichas;
     }
 
     public void repartir() {
@@ -44,8 +48,8 @@ public class Modelojuego {
                 jugadores[i].getFichas().add(tablero.getListaFichas().removeLast());
     }
 
-    public void mostrarFichasJugadores(){
-        for(int i = 0; i < jugadores.length; i++){
+    public void mostrarFichasJugadores() {
+        for (int i = 0; i < jugadores.length; i++) {
             System.out.println(jugadores[i].getNombre());
             System.out.println(jugadores[i].getFichas().toString());
             System.out.println();
@@ -57,7 +61,9 @@ public class Modelojuego {
         repartir();
         mostrarFichasJugadores();
         int jugador = obtenerJugadorInicial();
-        primerPieza(jugadores[jugador]);
+        try{
+            primerPieza(jugadores[jugador]);
+        }
         jugador++;
         if (jugador == 4)
             jugador = 0;
@@ -69,7 +75,7 @@ public class Modelojuego {
         }
     }
 
-    private boolean finPartida(){
+    private boolean finPartida() {
         for (int i = 0; i < jugadores.length; i++)
             if (jugadores[i].getFichas().isEmpty())
                 return true;
@@ -157,24 +163,24 @@ public class Modelojuego {
         for (int i = 0; i < jugadores.length; i++)
             for (int j = 0; j < jugadores[i].getFichas().size(); j++)
                 if (jugadores[i].getFichas().get(j).getValor1() == 6
-                        && jugadores[i].getFichas().get(j).getValor2() == 6)
+                        && jugadores[i].getFichas().get(j).getValor2() == 6) {
+                    indiceJugadorActual = i;
                     return i;
+                }
         return -1;
     }
 
-    public void primerPieza(Jugador j) {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("----------------------------" + j.getNombre()
-                + " fichas----------------------------------------------");
+    public boolean primerPieza(Jugador j, FichaDomino f) {
         j.verFichas();
-        System.out.println("----------------------------" + j.getNombre()
-                + " fichas----------------------------------------------");
-
-        System.out.println("Inserte la mula del 6");
-        int aux = sc.nextInt();
-        FichaDomino f = j.getFichas().get(aux);
-        j.borrarFicha(aux);
+        if (f.getValor1() != 6 || f.getValor2() != 6) 
+            return false;
+        j.borrarFicha(f);
         tablero.insertarDerecha(f);
+        return true;
+    }
+
+    public boolean esPrimeraPieza() {
+        return esPrimeraPieza;
     }
 
     public Jugador[] getJugadores() {
@@ -185,5 +191,14 @@ public class Modelojuego {
         return tablero;
     }
 
-    
+    public int getIndiceJugadorActual() {
+        return indiceJugadorActual;
+    }
+
+    public void actualizarIndiceJugadorActual() {
+        indiceJugadorActual++;
+        if (indiceJugadorActual == NUMERO_DE_JUGADORES)
+            indiceJugadorActual = 0;
+    }
+
 }

@@ -21,7 +21,11 @@ public class Jugador {
             System.out.println("Índice fuera de rango");
         }
     }
-    
+
+    public void borrarFicha(FichaDomino ficha) {
+        fichas.remove(ficha);
+    }
+
     public void verFichas() {
         for (FichaDomino f : fichas)
             System.out.println(f.toString());

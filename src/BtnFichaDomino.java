@@ -5,12 +5,12 @@ public class BtnFichaDomino extends JButton {
     private String claveImagenAsociada;
     private boolean esMula;
 
-    public BtnFichaDomino(FichaDomino fichaAsociada){
+    public BtnFichaDomino(FichaDomino fichaAsociada) {
         this.fichaAsociada = fichaAsociada;
         claveImagenAsociada = "" + fichaAsociada.getValor1() + fichaAsociada.getValor2();
         if (fichaAsociada.getValor1() == fichaAsociada.getValor2())
             esMula = true;
-        else 
+        else
             esMula = false;
     }
 
@@ -22,9 +22,7 @@ public class BtnFichaDomino extends JButton {
         return claveImagenAsociada;
     }
 
-    public boolean isEsMula() {
+    public boolean getEsMula() {
         return esMula;
     }
-
-    
 }
