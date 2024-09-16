@@ -90,8 +90,24 @@ public class Controlador implements ActionListener {
                             AlgoAuxAcomodo.setMatrizPrimero(aux);
                             actualizarPanelesJugadores();
                             vista.actualizarTablero();
+                            modelo.setEsPrimeraPieza(false);
                         }
+                        return;
                     }
+                    int comp = modelo.turno(modelo.getJugadores()[i], aux.getFichaAsociada());
+                    if (comp != -1) {
+                        modelo.actualizarIndiceJugadorActual();
+                        vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
+                        if (comp == 1)
+                            AlgoAuxAcomodo.setMatrizDerecha(aux);
+                        else
+                            AlgoAuxAcomodo.setMatrizIzquierda(aux);
+                        actualizarPanelesJugadores();
+                        vista.actualizarTablero();
+                        // TODO => modelo.evaluarFinalPartida();
+                    }
+                    return;
                 }
+
     }
 }
