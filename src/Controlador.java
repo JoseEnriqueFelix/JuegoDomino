@@ -1,6 +1,7 @@
 import java.util.LinkedList;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 import java.awt.event.*;
 
@@ -28,6 +29,13 @@ public class Controlador implements ActionListener {
         vista.getBtnRepartir().addActionListener(this);
     }
 
+    public void setEscuchadoresPasar() {
+        JButton[] aux = vista.getBtnsPasar();
+        for (int i = 0; i < aux.length; i++) {
+            aux[i].addActionListener(this);
+        }
+    }
+
     private void setEscuchadoresPiezasJugadores() {
         LinkedList<BtnFichaDomino>[] lista = vista.getFichasJugadores();
         for (int i = 0; i < lista.length; i++)
@@ -35,19 +43,11 @@ public class Controlador implements ActionListener {
                 lista[i].get(j).addActionListener(this);
     }
 
-    private void actualizarPanelesJugadores() {
-        vista.actualizarPanelesJugadores(modelo.getJugadores());
-    }
-
-    private void actualizarPanelTablero() {
-        vista.setNuevoTablero(getListaFichasTablero());
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if ((JButton) e.getSource() == vista.getBtnMezclar()) {
             modelo.mezclarFichas();
-            actualizarPanelTablero();
+            vista.setNuevoTablero(getListaFichasTablero());
             return;
         }
         if ((JButton) e.getSource() == vista.getBtnMostrar()) {
@@ -63,20 +63,29 @@ public class Controlador implements ActionListener {
                     f.setVisible(true);
                 vista.getBtnMostrar().setText("Ocultar");
             }
-            actualizarPanelTablero();
+            vista.setNuevoTablero(getListaFichasTablero());
             return;
         }
         if ((JButton) e.getSource() == vista.getBtnRepartir()) {
             modelo.repartir();
-            actualizarPanelesJugadores();
-            actualizarPanelTablero();
+            vista.repartirFichas(modelo.getJugadores());
+            vista.setNuevoTablero(getListaFichasTablero());
             setEscuchadoresPiezasJugadores();
+            setEscuchadoresPasar();
             int i = modelo.obtenerJugadorInicial();
             vista.setFocusPanelJugadorActual(i);
             vista.getBtnMezclar().setEnabled(false);
-            vista.getBtnMostrar().setEnabled(false);
             vista.getBtnRepartir().setEnabled(false);
+            vista.getBtnMostrar().setEnabled(false);
             return;
+        }
+        JButton[] auxPasar = vista.getBtnsPasar();
+        for (int i = 0; i < auxPasar.length; i++) {
+            if ((JButton) e.getSource() == auxPasar[i]) {
+                modelo.actualizarIndiceJugadorActual();
+                vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
+                return;
+            }
         }
         LinkedList<BtnFichaDomino>[] lista = vista.getFichasJugadores();
         BtnFichaDomino aux = (BtnFichaDomino) e.getSource();
@@ -87,26 +96,31 @@ public class Controlador implements ActionListener {
                         if (modelo.primerPieza(modelo.getJugadores()[i], aux.getFichaAsociada())) {
                             modelo.actualizarIndiceJugadorActual();
                             vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
-                            AlgoAuxAcomodo.setMatrizPrimero(aux);
-                            actualizarPanelesJugadores();
-                            //actualizarPanelTablero();
+                            vista.actualizarPanelesJugadores(aux.getFichaAsociada());
+                            vista.setNuevoTablero(getListaFichasTablero());
                             setEscuchadoresPiezasJugadores();
+                            setEscuchadoresPasar();
                             modelo.setEsPrimeraPieza(false);
                         }
                         return;
                     }
-                    int comp = modelo.turno(modelo.getJugadores()[i], aux.getFichaAsociada());
-                    if (comp != -1) {
+                    if (modelo.turno(modelo.getJugadores()[i], aux.getFichaAsociada())) {
                         modelo.actualizarIndiceJugadorActual();
                         vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
-                        if (comp == 1)
-                            AlgoAuxAcomodo.setMatrizDerecha(aux);
-                        else
-                            AlgoAuxAcomodo.setMatrizIzquierda(aux);
-                        actualizarPanelesJugadores();
-                        //vista.actualizarTablero();
+                        vista.actualizarPanelesJugadores(aux.getFichaAsociada());
+                        vista.setNuevoTablero(getListaFichasTablero());
+                        
+                        setEscuchadoresPasar();
                         setEscuchadoresPiezasJugadores();
-                        // TODO => modelo.evaluarFinalPartida();
+                        
+                        if (modelo.evaluarFinalPartida()) {
+                            JOptionPane.showMessageDialog(vista,
+                                    "¡La partida ha terminado\nHa ganado el jugador " + modelo.getGanador(),
+                                    "Fin del Juego",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            vista.dispose();
+                            System.exit(0);
+                        }
                     }
                     return;
                 }

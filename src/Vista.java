@@ -34,7 +34,7 @@ public class Vista extends JFrame {
     }
 
     private void hazInterfaz() {
-        setSize(1280, 720);
+        setSize(1500, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
@@ -87,9 +87,9 @@ public class Vista extends JFrame {
         ancho = (int) (w * 0.25);
         jugadores[3].setBounds(x, y, ancho, alto);
         // posicion del tablero
-        x = (int) (w * 0.25);
+        x = 0;
         y = (int) (h * 0.25);
-        ancho = (int) (w * 0.5);
+        ancho = w;
         alto = (int) (h * 0.5);
         tablero.setBounds(x, y, ancho, alto);
         // posicion mezclar
@@ -125,14 +125,20 @@ public class Vista extends JFrame {
                 btnsFichasTablero[i] = new BtnFichaDomino(fichas.get(i));
                 BufferedImage img;
                 if (btnsFichasTablero[i].getFichaAsociada().getEsVisible()) {
-                    img = ImageIO.read(new File("imagenes/" + btnsFichasTablero[i].getClaveImagenAsociada() + ".png"));
-                    BufferedImage rotatedImg = rotateImage(img, 90);
-                    ImageIcon icon = new ImageIcon(rotatedImg);
-                    btnsFichasTablero[i].setIcon(Rutinas.AjustarImagen(icon, 75, 75));
+                    if (btnsFichasTablero[i].getEsMula())
+                        btnsFichasTablero[i].setIcon(Rutinas.AjustarImagen(
+                                "imagenes/" + btnsFichasTablero[i].getClaveImagenAsociada() + ".png", 65, 65));
+                    else {
+                        img = ImageIO
+                                .read(new File("imagenes/" + btnsFichasTablero[i].getClaveImagenAsociada() + ".png"));
+                        BufferedImage rotatedImg = rotateImage(img, 90);
+                        ImageIcon icon = new ImageIcon(rotatedImg);
+                        btnsFichasTablero[i].setIcon(Rutinas.AjustarImagen(icon, 65, 65));
+                    }
                 } else {
                     img = ImageIO.read(new File("imagenes/oculto.png"));
                     ImageIcon icon = new ImageIcon(img);
-                    btnsFichasTablero[i].setIcon(Rutinas.AjustarImagen(icon, 75, 75));
+                    btnsFichasTablero[i].setIcon(Rutinas.AjustarImagen(icon, 65, 65));
                 }
                 tablero.add(btnsFichasTablero[i]);
             }
@@ -143,47 +149,8 @@ public class Vista extends JFrame {
         repaint();
     }
 
-    public void actualizarTablero() {
-        for (int i = 0; i < AlgoAuxAcomodo.getMatriz().length; i++) {
-            for (int j = 0; j < AlgoAuxAcomodo.getMatriz()[0].length; j++) {
-                if (AlgoAuxAcomodo.getMatriz()[i][j] == null) {
-                    GridBagConstraints gbc = new GridBagConstraints();
-                    gbc.gridx = j;
-                    gbc.gridy = i;
-                    gbc.gridheight = 1;
-                    gbc.gridwidth = 1;
-                    gbc.weightx = 1.0;
-                    gbc.weighty = 1.0;
-                    gbc.fill = GridBagConstraints.BOTH;
-                    tablero.add(new JButton(), gbc);
-                } else {
-                    try {
-                        BufferedImage img;
-                        img = ImageIO
-                                .read(new File("imagenes/" + AlgoAuxAcomodo.getMatriz()[i][j].getClaveImagenAsociada()
-                                        + ".png"));
-                        BufferedImage rotatedImg = rotateImage(img, 90);
-                        ImageIcon icon = new ImageIcon(rotatedImg);
-                        AlgoAuxAcomodo.getMatriz()[i][j].setIcon(Rutinas.AjustarImagen(icon, 75, 75));
-                    } catch (Exception e) {
-                    }
-                    GridBagConstraints gbc = new GridBagConstraints();
-                    gbc.gridx = j;
-                    gbc.gridy = i;
-                    gbc.gridheight = 1;
-                    gbc.gridwidth = 1;
-                    gbc.weightx = 1.0;
-                    gbc.weighty = 1.0;
-                    gbc.fill = GridBagConstraints.BOTH;
-                    tablero.add(AlgoAuxAcomodo.getMatriz()[i][j], gbc);
-                }
-            }
-        }
-        revalidate();
-        repaint();
-    }
+    public void repartirFichas(Jugador[] jug) {
 
-    public void actualizarPanelesJugadores(Jugador[] jug) {
         for (int i = 0; i < jug.length; i++) {
             LinkedList<FichaDomino> aux = jug[i].getFichas();
             fichasJugadores[i] = new LinkedList<>();
@@ -191,6 +158,7 @@ public class Vista extends JFrame {
                 if (aux.contains(btnsFichasTablero[j].getFichaAsociada()))
                     fichasJugadores[i].add(btnsFichasTablero[j]);
         }
+
         for (int i = 0; i < jug.length; i++) {
             int c = 0;
             int f = 0;
@@ -210,6 +178,49 @@ public class Vista extends JFrame {
                     f++;
                 }
             }
+        }
+        revalidate();
+        repaint();
+    }
+
+    public void actualizarPanelesJugadores(FichaDomino ficha) {
+        for (int i = 0; i < jugadores.length; i++)
+            for (int j = 0; j < fichasJugadores[i].size(); j++)
+                if (fichasJugadores[i].get(j).getFichaAsociada() == ficha)
+                    fichasJugadores[i].remove(j);
+        for (int i = 0; i < jugadores.length; i++) {
+            jugadores[i].removeAll();
+            int c = 0;
+            int f = 0;
+            GridBagConstraints gbc = new GridBagConstraints();
+            for (int j = 0; j < fichasJugadores[i].size(); j++) {
+                gbc.gridx = c++;
+                gbc.gridy = f;
+                gbc.gridheight = 1;
+                gbc.gridwidth = 1;
+                gbc.weightx = 1.0;
+                gbc.weighty = 1.0;
+
+                gbc.fill = GridBagConstraints.BOTH;
+                jugadores[i].add(fichasJugadores[i].get(j), gbc);
+                if (c == 4) {
+                    c = 0;
+                    f++;
+                }
+            }
+        }
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 1;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        for (int i = 0; i < jugadores.length; i++) {
+            btnsPasar[i] = new JButton("Pasar");
+            jugadores[i].add(btnsPasar[i], gbc);
         }
         revalidate();
         repaint();
@@ -238,6 +249,10 @@ public class Vista extends JFrame {
 
     public JButton getBtnMostrar() {
         return btnMostrar;
+    }
+
+    public JButton[] getBtnsPasar() {
+        return btnsPasar;
     }
 
     public BtnFichaDomino[] getbtnsFichasTablero() {

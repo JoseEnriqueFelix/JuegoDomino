@@ -8,6 +8,7 @@ public class Modelojuego {
     private TableroDomino tablero;
     private boolean esPrimeraPieza;
     private int indiceJugadorActual;
+    private String ganador;
 
     public Modelojuego() {
         listaFichas = new LinkedList<FichaDomino>();
@@ -63,19 +64,19 @@ public class Modelojuego {
         return false;
     }
 
-    public int turno(Jugador j, FichaDomino f) {
+    public boolean turno(Jugador j, FichaDomino f) {
         if (tablero.getListaFichas().getLast().getSeleccionado() == 0
                 || tablero.getListaFichas().getLast().getSeleccionado() == 1) {
             if (tablero.getListaFichas().getLast().getValor1() == f.getValor1()) {
                 f.setSeleccionado(-1);
                 j.borrarFicha(f);
                 tablero.insertarDerecha(f);
-                return 1;
+                return true;
             } else if (tablero.getListaFichas().getLast().getValor1() == f.getValor2()) {
                 f.setSeleccionado(1);
                 j.borrarFicha(f);
                 tablero.insertarDerecha(f);
-                return 1;
+                return true;
             }
         }
         if (tablero.getListaFichas().getLast().getSeleccionado() == -1) {
@@ -83,12 +84,12 @@ public class Modelojuego {
                 f.setSeleccionado(-1);
                 j.borrarFicha(f);
                 tablero.insertarDerecha(f);
-                return 1;
+                return true;
             } else if (tablero.getListaFichas().getLast().getValor2() == f.getValor2()) {
                 f.setSeleccionado(1);
                 j.borrarFicha(f);
                 tablero.insertarDerecha(f);
-                return 1;
+                return true;
             }
         }
         if (tablero.getListaFichas().getFirst().getSeleccionado() == 0
@@ -97,12 +98,12 @@ public class Modelojuego {
                 f.setSeleccionado(-1);
                 j.borrarFicha(f);
                 tablero.insertarIzquierda(f);
-                return 0;
+                return true;
             } else if (tablero.getListaFichas().getFirst().getValor1() == f.getValor2()) {
                 f.setSeleccionado(1);
                 j.borrarFicha(f);
                 tablero.insertarIzquierda(f);
-                return 0;
+                return true;
             }
         }
         if (tablero.getListaFichas().getFirst().getSeleccionado() == -1) {
@@ -110,15 +111,72 @@ public class Modelojuego {
                 f.setSeleccionado(-1);
                 j.borrarFicha(f);
                 tablero.insertarIzquierda(f);
-                return 0;
+                return true;
             } else if (tablero.getListaFichas().getFirst().getValor2() == f.getValor2()) {
                 f.setSeleccionado(1);
                 j.borrarFicha(f);
                 tablero.insertarIzquierda(f);
-                return 0;
+                return true;
             }
         }
-        return -1;
+        return false;
+    }
+
+    private boolean turnoFalso(Jugador j, FichaDomino f) {
+        if (tablero.getListaFichas().getLast().getSeleccionado() == 0
+                || tablero.getListaFichas().getLast().getSeleccionado() == 1) {
+            if (tablero.getListaFichas().getLast().getValor1() == f.getValor1())
+                return true;
+            else if (tablero.getListaFichas().getLast().getValor1() == f.getValor2())
+                return true;
+        }
+        if (tablero.getListaFichas().getLast().getSeleccionado() == -1) {
+            if (tablero.getListaFichas().getLast().getValor2() == f.getValor1())
+                return true;
+            else if (tablero.getListaFichas().getLast().getValor2() == f.getValor2())
+                return true;
+        }
+        if (tablero.getListaFichas().getFirst().getSeleccionado() == 0
+                || tablero.getListaFichas().getFirst().getSeleccionado() == 1) {
+            if (tablero.getListaFichas().getFirst().getValor1() == f.getValor1()) 
+                return true;
+            else if (tablero.getListaFichas().getFirst().getValor1() == f.getValor2())
+                return true;
+        }
+        if (tablero.getListaFichas().getFirst().getSeleccionado() == -1) {
+            if (tablero.getListaFichas().getFirst().getValor2() == f.getValor1())
+                return true;
+            else if (tablero.getListaFichas().getFirst().getValor2() == f.getValor2()) 
+                return true;
+        }
+        return false;
+    }
+
+    public boolean evaluarFinalPartida() {
+        for (int i = 0; i < jugadores.length; i++)
+            if (jugadores[i].getFichas().size() == 0) {
+                ganador = jugadores[i].getNombre();
+                return true;
+            }
+        for (int i = 0; i < jugadores.length; i++)
+            for (int j = 0; j < jugadores[i].getFichas().size(); j++)
+                if (turnoFalso(jugadores[i], jugadores[i].getFichas().get(j)))
+                    return false;
+
+        int[] puntos = new int[NUMERO_DE_JUGADORES];
+        int indiceGanador = 0;
+        for (int i = 1; i < jugadores.length; i++) {
+            for (int j = 0; j < jugadores[i].getFichas().size(); j++)
+                puntos[i] += jugadores[i].getFichas().get(j).getValor1() + jugadores[i].getFichas().get(j).getValor2();
+            if (puntos[i] <= puntos[indiceGanador])
+                indiceGanador = i;
+        }
+        ganador = jugadores[indiceGanador].getNombre();
+        return true;
+    }
+
+    public String getGanador() {
+        return ganador;
     }
 
     public int obtenerJugadorInicial() {
