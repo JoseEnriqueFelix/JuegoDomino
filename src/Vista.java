@@ -44,7 +44,7 @@ public class Vista extends JFrame {
             jugadores[i] = new JPanel();
             jugadores[i].setLayout(new GridBagLayout());
         }
-        tablero.setLayout(new GridBagLayout());
+        tablero.setLayout(new GridLayout(1, 0));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 3;
@@ -121,8 +121,6 @@ public class Vista extends JFrame {
             return;
         btnsFichasTablero = new BtnFichaDomino[fichas.size()];
         try {
-            int c = 0;
-            int f = 0;
             for (int i = 0; i < fichas.size(); i++) {
                 btnsFichasTablero[i] = new BtnFichaDomino(fichas.get(i));
                 BufferedImage img;
@@ -136,20 +134,7 @@ public class Vista extends JFrame {
                     ImageIcon icon = new ImageIcon(img);
                     btnsFichasTablero[i].setIcon(Rutinas.AjustarImagen(icon, 75, 75));
                 }
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = c++;
-                gbc.gridy = f;
-                gbc.gridheight = 1;
-                gbc.gridwidth = 1;
-                gbc.weightx = 1.0;
-                gbc.weighty = 1.0;
-
-                gbc.fill = GridBagConstraints.BOTH;
-                tablero.add(btnsFichasTablero[i], gbc);
-                if (c == 7) {
-                    c = 0;
-                    f++;
-                }
+                tablero.add(btnsFichasTablero[i]);
             }
         } catch (Exception e) {
             e.printStackTrace();

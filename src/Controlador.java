@@ -89,7 +89,8 @@ public class Controlador implements ActionListener {
                             vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
                             AlgoAuxAcomodo.setMatrizPrimero(aux);
                             actualizarPanelesJugadores();
-                            vista.actualizarTablero();
+                            //actualizarPanelTablero();
+                            setEscuchadoresPiezasJugadores();
                             modelo.setEsPrimeraPieza(false);
                         }
                         return;
@@ -103,7 +104,8 @@ public class Controlador implements ActionListener {
                         else
                             AlgoAuxAcomodo.setMatrizIzquierda(aux);
                         actualizarPanelesJugadores();
-                        vista.actualizarTablero();
+                        //vista.actualizarTablero();
+                        setEscuchadoresPiezasJugadores();
                         // TODO => modelo.evaluarFinalPartida();
                     }
                     return;
