@@ -131,7 +131,7 @@ public class Vista extends JFrame {
                     else {
                         img = ImageIO
                                 .read(new File("imagenes/" + btnsFichasTablero[i].getClaveImagenAsociada() + ".png"));
-                        BufferedImage rotatedImg = rotateImage(img, 90);
+                        BufferedImage rotatedImg = rotateImage(img, btnsFichasTablero[i].getFichaAsociada().getRotacion());
                         ImageIcon icon = new ImageIcon(rotatedImg);
                         btnsFichasTablero[i].setIcon(Rutinas.AjustarImagen(icon, 65, 65));
                     }

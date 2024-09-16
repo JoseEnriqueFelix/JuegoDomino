@@ -57,13 +57,6 @@ public class Modelojuego {
         }
     }
 
-    private boolean finPartida() {
-        for (int i = 0; i < jugadores.length; i++)
-            if (jugadores[i].getFichas().isEmpty())
-                return true;
-        return false;
-    }
-
     public boolean turno(Jugador j, FichaDomino f) {
         if (tablero.getListaFichas().getLast().getSeleccionado() == 0
                 || tablero.getListaFichas().getLast().getSeleccionado() == 1) {
@@ -71,11 +64,13 @@ public class Modelojuego {
                 f.setSeleccionado(-1);
                 j.borrarFicha(f);
                 tablero.insertarDerecha(f);
+                f.setRotacion(270);
                 return true;
             } else if (tablero.getListaFichas().getLast().getValor1() == f.getValor2()) {
                 f.setSeleccionado(1);
                 j.borrarFicha(f);
                 tablero.insertarDerecha(f);
+                f.setRotacion(90);
                 return true;
             }
         }
@@ -84,11 +79,13 @@ public class Modelojuego {
                 f.setSeleccionado(-1);
                 j.borrarFicha(f);
                 tablero.insertarDerecha(f);
+                f.setRotacion(270);
                 return true;
             } else if (tablero.getListaFichas().getLast().getValor2() == f.getValor2()) {
                 f.setSeleccionado(1);
                 j.borrarFicha(f);
                 tablero.insertarDerecha(f);
+                f.setRotacion(90);
                 return true;
             }
         }
@@ -98,11 +95,13 @@ public class Modelojuego {
                 f.setSeleccionado(-1);
                 j.borrarFicha(f);
                 tablero.insertarIzquierda(f);
+                f.setRotacion(90);
                 return true;
             } else if (tablero.getListaFichas().getFirst().getValor1() == f.getValor2()) {
                 f.setSeleccionado(1);
                 j.borrarFicha(f);
                 tablero.insertarIzquierda(f);
+                f.setRotacion(270);
                 return true;
             }
         }
@@ -111,11 +110,13 @@ public class Modelojuego {
                 f.setSeleccionado(-1);
                 j.borrarFicha(f);
                 tablero.insertarIzquierda(f);
+                f.setRotacion(90);
                 return true;
             } else if (tablero.getListaFichas().getFirst().getValor2() == f.getValor2()) {
                 f.setSeleccionado(1);
                 j.borrarFicha(f);
                 tablero.insertarIzquierda(f);
+                f.setRotacion(270);
                 return true;
             }
         }
