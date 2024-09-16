@@ -64,7 +64,6 @@ public class Vista extends JFrame {
         btnMezclar = new JButton("Mezclar");
         btnRepartir = new JButton("Repartir");
 
-        
         bordeOriginal = tablero.getBorder();
 
         int w = this.getWidth();
@@ -77,13 +76,15 @@ public class Vista extends JFrame {
         jugadores[0].setBounds(x, y, ancho, alto);
         // posicion del panel jugador2
         x = (int) (w * 0.75);
+        ancho = (int) (w * 0.24);
         jugadores[1].setBounds(x, y, ancho, alto);
         // posicion del jugador3
         y = (int) (h * 0.75);
-        alto = (int) (h * 0.2); 
+        alto = (int) (h * 0.2);
         jugadores[2].setBounds(x, y, ancho, alto);
         // posicion del jugador4
         x = 0;
+        ancho = (int) (w * 0.25);
         jugadores[3].setBounds(x, y, ancho, alto);
         // posicion del tablero
         x = (int) (w * 0.25);
@@ -116,7 +117,7 @@ public class Vista extends JFrame {
 
     public void setNuevoTablero(LinkedList<FichaDomino> fichas) {
         tablero.removeAll();
-        if (fichas.isEmpty()) 
+        if (fichas.isEmpty())
             return;
         btnsFichasTablero = new BtnFichaDomino[fichas.size()];
         try {
@@ -124,16 +125,16 @@ public class Vista extends JFrame {
             int f = 0;
             for (int i = 0; i < fichas.size(); i++) {
                 btnsFichasTablero[i] = new BtnFichaDomino(fichas.get(i));
+                BufferedImage img;
                 if (btnsFichasTablero[i].getFichaAsociada().getEsVisible()) {
-                    ImageIcon icon = Rutinas.AjustarImagen(
-                            "imagenes/" + btnsFichasTablero[i].getClaveImagenAsociada() + ".png",
-                            75, 75);
-                    btnsFichasTablero[i].setIcon(icon);
+                    img = ImageIO.read(new File("imagenes/" + btnsFichasTablero[i].getClaveImagenAsociada() + ".png"));
+                    BufferedImage rotatedImg = rotateImage(img, 90);
+                    ImageIcon icon = new ImageIcon(rotatedImg);
+                    btnsFichasTablero[i].setIcon(Rutinas.AjustarImagen(icon, 75, 75));
                 } else {
-                    ImageIcon icon = Rutinas.AjustarImagen(
-                            "imagenes/oculto.png",
-                            80, 80);
-                    btnsFichasTablero[i].setIcon(icon);
+                    img = ImageIO.read(new File("imagenes/oculto.png"));
+                    ImageIcon icon = new ImageIcon(img);
+                    btnsFichasTablero[i].setIcon(Rutinas.AjustarImagen(icon, 75, 75));
                 }
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = c++;
@@ -152,6 +153,46 @@ public class Vista extends JFrame {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        revalidate();
+        repaint();
+    }
+
+    public void actualizarTablero() {
+        for (int i = 0; i < AlgoAuxAcomodo.getMatriz().length; i++) {
+            for (int j = 0; j < AlgoAuxAcomodo.getMatriz()[0].length; j++) {
+                if (AlgoAuxAcomodo.getMatriz()[i][j] == null) {
+                    GridBagConstraints gbc = new GridBagConstraints();
+                    gbc.gridx = j;
+                    gbc.gridy = i;
+                    gbc.gridheight = 1;
+                    gbc.gridwidth = 1;
+                    gbc.weightx = 1.0;
+                    gbc.weighty = 1.0;
+                    gbc.fill = GridBagConstraints.BOTH;
+                    tablero.add(new JButton(), gbc);
+                } else {
+                    try {
+                        BufferedImage img;
+                        img = ImageIO
+                                .read(new File("imagenes/" + AlgoAuxAcomodo.getMatriz()[i][j].getClaveImagenAsociada()
+                                        + ".png"));
+                        BufferedImage rotatedImg = rotateImage(img, 90);
+                        ImageIcon icon = new ImageIcon(rotatedImg);
+                        AlgoAuxAcomodo.getMatriz()[i][j].setIcon(Rutinas.AjustarImagen(icon, 75, 75));
+                    } catch (Exception e) {
+                    }
+                    GridBagConstraints gbc = new GridBagConstraints();
+                    gbc.gridx = j;
+                    gbc.gridy = i;
+                    gbc.gridheight = 1;
+                    gbc.gridwidth = 1;
+                    gbc.weightx = 1.0;
+                    gbc.weighty = 1.0;
+                    gbc.fill = GridBagConstraints.BOTH;
+                    tablero.add(AlgoAuxAcomodo.getMatriz()[i][j], gbc);
+                }
+            }
         }
         revalidate();
         repaint();
@@ -189,11 +230,11 @@ public class Vista extends JFrame {
         repaint();
     }
 
-    public void setFocusPanelJugadorActual(int i){
+    public void setFocusPanelJugadorActual(int i) {
         jugadores[i].setBorder(actual);
         for (int j = 0; j < fichasJugadores[i].size(); j++)
             fichasJugadores[i].get(j).setEnabled(true);
-        for (int j = 0; j < jugadores.length; j++){
+        for (int j = 0; j < jugadores.length; j++) {
             if (j == i)
                 continue;
             for (int k = 0; k < fichasJugadores[j].size(); k++)

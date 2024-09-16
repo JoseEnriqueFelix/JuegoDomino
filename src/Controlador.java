@@ -87,11 +87,10 @@ public class Controlador implements ActionListener {
                         if (modelo.primerPieza(modelo.getJugadores()[i], aux.getFichaAsociada())) {
                             modelo.actualizarIndiceJugadorActual();
                             vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
+                            AlgoAuxAcomodo.setMatrizPrimero(aux);
                             actualizarPanelesJugadores();
-                            actualizarPanelTablero();
+                            vista.actualizarTablero();
                         }
-                        System.out.println(aux.getFichaAsociada().toString());
-                        return;
                     }
                 }
     }
