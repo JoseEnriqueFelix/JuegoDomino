@@ -228,6 +228,7 @@ public class Vista extends JFrame {
 
     public void setFocusPanelJugadorActual(int i) {
         jugadores[i].setBorder(actual);
+        btnsPasar[i].setEnabled(true);
         for (int j = 0; j < fichasJugadores[i].size(); j++)
             fichasJugadores[i].get(j).setEnabled(true);
         for (int j = 0; j < jugadores.length; j++) {
@@ -235,8 +236,10 @@ public class Vista extends JFrame {
                 continue;
             for (int k = 0; k < fichasJugadores[j].size(); k++)
                 fichasJugadores[j].get(k).setEnabled(false);
+            btnsPasar[j].setEnabled(false);
             jugadores[j].setBorder(bordeOriginal);
         }
+
     }
 
     public JButton getBtnMezclar() {

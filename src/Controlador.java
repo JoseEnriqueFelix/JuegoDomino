@@ -51,22 +51,11 @@ public class Controlador implements ActionListener {
             return;
         }
         if ((JButton) e.getSource() == vista.getBtnMostrar()) {
-            LinkedList<FichaDomino> fichas;
-            if (vista.getBtnMostrar().getText().equals("Ocultar")) {
-                fichas = getListaFichasTablero();
-                for (FichaDomino f : fichas)
-                    f.setVisible(false);
-                vista.getBtnMostrar().setText("Mostrar");
-            } else {
-                fichas = getListaFichasTablero();
-                for (FichaDomino f : fichas)
-                    f.setVisible(true);
-                vista.getBtnMostrar().setText("Ocultar");
-            }
-            vista.setNuevoTablero(getListaFichasTablero());
-            return;
+            funcionalidadOcultarMostrar();
         }
         if ((JButton) e.getSource() == vista.getBtnRepartir()) {
+            if (vista.getBtnMostrar().getText().equals("Mostrar"))
+                funcionalidadOcultarMostrar();
             modelo.repartir();
             vista.repartirFichas(modelo.getJugadores());
             vista.setNuevoTablero(getListaFichasTablero());
@@ -94,10 +83,10 @@ public class Controlador implements ActionListener {
                 if (aux == lista[i].get(j)) {
                     if (modelo.esPrimeraPieza()) {
                         if (modelo.primerPieza(modelo.getJugadores()[i], aux.getFichaAsociada())) {
-                            modelo.actualizarIndiceJugadorActual();
-                            vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
                             vista.actualizarPanelesJugadores(aux.getFichaAsociada());
                             vista.setNuevoTablero(getListaFichasTablero());
+                            modelo.actualizarIndiceJugadorActual();
+                            vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
                             setEscuchadoresPiezasJugadores();
                             setEscuchadoresPasar();
                             modelo.setEsPrimeraPieza(false);
@@ -105,14 +94,14 @@ public class Controlador implements ActionListener {
                         return;
                     }
                     if (modelo.turno(modelo.getJugadores()[i], aux.getFichaAsociada())) {
-                        modelo.actualizarIndiceJugadorActual();
-                        vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
                         vista.actualizarPanelesJugadores(aux.getFichaAsociada());
                         vista.setNuevoTablero(getListaFichasTablero());
-                        
+                        modelo.actualizarIndiceJugadorActual();
+                        vista.setFocusPanelJugadorActual(modelo.getIndiceJugadorActual());
+
                         setEscuchadoresPasar();
                         setEscuchadoresPiezasJugadores();
-                        
+
                         if (modelo.evaluarFinalPartida()) {
                             JOptionPane.showMessageDialog(vista,
                                     "¡La partida ha terminado\nHa ganado el jugador " + modelo.getGanador(),
@@ -125,5 +114,22 @@ public class Controlador implements ActionListener {
                     return;
                 }
 
+    }
+
+    private void funcionalidadOcultarMostrar() {
+        LinkedList<FichaDomino> fichas;
+        if (vista.getBtnMostrar().getText().equals("Ocultar")) {
+            fichas = getListaFichasTablero();
+            for (FichaDomino f : fichas)
+                f.setVisible(false);
+            vista.getBtnMostrar().setText("Mostrar");
+        } else {
+            fichas = getListaFichasTablero();
+            for (FichaDomino f : fichas)
+                f.setVisible(true);
+            vista.getBtnMostrar().setText("Ocultar");
+        }
+        vista.setNuevoTablero(getListaFichasTablero());
+        return;
     }
 }
